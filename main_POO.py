@@ -13,7 +13,14 @@ class Game:
         self.player = Player(250,250)   # Création du joueur aux coordonnées (250, 250)
         self.zone = pygame.Rect(600,350,300,300)
         self.zone_color = (255,0,0)
-    
+        self.rect_testx = self.player.rect.copy()
+        self.rect_testy = self.player.rect.copy()
+        self.acces_mx = False
+        self.acces_my = False
+        self.acces_px = False
+        self.acces_py = False
+
+
     ### Gestion des evenements ###
     def event(self):
         # gestion des evenement de fermeture
@@ -22,36 +29,69 @@ class Game:
                 self.running = False
         
         # Gestion des déplacement
+        self.player.direction = [0, 0]  # Réinitialisation de la direction à chaque frame
         keys = pygame.key.get_pressed()
         
         if keys[K_q]:
-            self.player.velocite[0] = -1
+            self.player.direction[0] = -self.player.speed
         elif keys[K_d]:
-            self.player.velocite[0] = 1
+            self.player.direction[0] = self.player.speed
         else:
-            self.player.velocite[0] = 0
+            self.player.direction[0] = 0
+
 
         if keys[K_z]:
-            self.player.velocite[1] = -1
+            self.player.direction[1] = -self.player.speed
         elif keys[K_s]:
-            self.player.velocite[1] = 1
+            self.player.direction[1] = self.player.speed
         else:
-            self.player.velocite[1] = 0
-        
+            self.player.direction[1] = 0
     
     
     ### gestion des mises à jour ###
     def update(self):
-        self.player.move()  # Met à jour la position du joueur
-        if self.player.rect.colliderect(self.zone):     # détection de collision
-            self.zone_color = (0,255,0)  # change la couleur de la zone en vert si collision
-        else:
-            self.zone_color = (255,0,0)  # sinon rouge
-    
+        self.player.velocite = [0,0]  # Réinitialisation de la vélocité à chaque frame
+        
+        self.acces_mx = False
+        self.acces_my = False
+        self.acces_px = False
+        self.acces_py = False
+        self.rect_testx = self.player.rect.copy()
+        self.rect_testy = self.player.rect.copy()
+        
+        ## on teste les rect futurs et on autorise ou non le déplacement ##
+        self.rect_testx.x = self.rect_testx.x + self.player.direction[0]
+        if self.rect_testx.colliderect(self.zone):
+            self.player.velocite[0] = 0
+        elif self.player.direction[0] < 0:
+            self.acces_mx = True
+        elif self.player.direction[0] > 0:
+            self.acces_px = True
+        
+        
+        self.rect_testy.y = self.rect_testy.y + self.player.direction[1]
+        if self.rect_testy.colliderect(self.zone):
+            self.player.velocite[1] = 0
+        elif self.player.direction[1] < 0:
+            self.acces_my = True
+        elif self.player.direction[1] > 0:
+            self.acces_py = True
+        
+        if self.acces_mx:
+            self.player.velocite[0] = -1
+        if self.acces_px:
+            self.player.velocite[0] = 1
+        if self.acces_my:
+            self.player.velocite[1] = -1
+        if self.acces_py:
+            self.player.velocite[1] = 1
+        
+        self.player.move()  # on applique le déplacement du joueur
+        
     
     ### gestion de l'affichage ###
     def display(self):
-        self.fenetre.fill("white")    # remplit la fenêtre en blanc (temporaire!)
+        self.fenetre.fill((255, 255, 255))  # Remplissage de la fenêtre en blanc
         pygame.draw.rect(self.fenetre, self.zone_color, self.zone) # on l'affiche avant le joueur
         self.player.draw(self.fenetre)  # Dessine le joueur
         pygame.display.flip()   # mise à jour de l'écran
