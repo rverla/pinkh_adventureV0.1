@@ -3,6 +3,7 @@ import pygame
 import sys
 from pygame.locals import *
 from pinkh import Player
+from map import Map
 
 class Game:
     
@@ -11,12 +12,13 @@ class Game:
         self.running = True  # variable de boucle principale
         self.clock = pygame.time.Clock()    # limitation des ticks par seconde
         self.player = Player(250,250)   # Création du joueur aux coordonnées (250, 250)
-        self.zone = pygame.Rect(600,350,300,300)
+        self.zone = pygame.Rect(825,350,300,300)
         self.zone_color = (255,0,0)
         self.rect_testx = self.player.rect.copy()   # rect test pour les collisions
         self.rect_testy = self.player.rect.copy()
         self.acces = [False, False, False, False]  # acces mx, my, px, py
-
+        self.map = Map()   # création de la map
+        self.map.creer_grille()   # création de la grille de la map
 
     ### Gestion des evenements ###
     def event(self):
@@ -52,10 +54,11 @@ class Game:
         self.acces = [False, False, False, False]  # réinitialisation des accès mx, my, px, py
         self.rect_testx = self.player.rect.copy()  # réinitialisation des rects tests
         self.rect_testy = self.player.rect.copy()
-        
+        self.case_actuelle = self.map.reperer_case(self.player.rect.x, self.player.rect.y)  # on repère la case actuelle du joueur
+
         ## on teste les rect futurs et on autorise ou non le déplacement ##
-        self.rect_testx.x = self.rect_testx.x + (self.player.direction[0] * self.player.speed)  # malynx le lynx
-        if self.rect_testx.colliderect(self.zone):
+        self.case_cible_x = self.map.reperer_case(self.rect_testx.x + (self.player.direction[0] * self.player.speed), self.rect_testx.y)  # malynx le lynx
+        if self.map.validation(self.case_actuelle, self.case_cible_x) == False:
             self.acces[0],self.acces[2] = False, False
         elif self.player.direction[0] < 0:
             self.acces[0] = True
@@ -63,8 +66,8 @@ class Game:
             self.acces[2] = True
 
 
-        self.rect_testy.y = self.rect_testy.y + (self.player.direction[1] * self.player.speed)
-        if self.rect_testy.colliderect(self.zone):
+        self.case_cible_y = self.map.reperer_case(self.rect_testy.x, self.rect_testy.y + (self.player.direction[1] * self.player.speed))
+        if self.map.validation(self.case_actuelle, self.case_cible_y) == False:
             self.acces[1],self.acces[3] = False, False
         elif self.player.direction[1] < 0:
             self.acces[1] = True
@@ -101,10 +104,9 @@ class Game:
 
 
 pygame.init() 
-fenetre = pygame.display.set_mode((1536, 1024)) # création de la fenêtre
+fenetre = pygame.display.set_mode((1920, 1080)) # création de la fenêtre
 game = Game(fenetre)    # création de l'objet jeu
 game.run()     # lancement de la boucle de jeu
-
 
 ## Fermeture du programme ##
 pygame.quit()
