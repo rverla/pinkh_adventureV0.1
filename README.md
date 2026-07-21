@@ -1,4 +1,4 @@
-## Pinkh Adventure
+# Pinkh Adventure
 A top-down 2D RPG built with Pygame (~40h of development, personal project).
 
 ## Features
@@ -9,5 +9,5 @@ A top-down 2D RPG built with Pygame (~40h of development, personal project).
 - Classes structured to be easily extended
 
 ## Run it
-pip install pygame
-python main_POO.py
+- pip install pygame
+- python main_POO.py
