@@ -1,7 +1,13 @@
-Pygame top view 2d rpg with for now with 40h of project:
-- a map
-- a map limit
-- a camera who follow the player
-- a player who can move
-- unutilized but working collision
-- evry class set up to upgrade in the future
+## Pinkh Adventure
+A top-down 2D RPG built with Pygame (~40h of development, personal project).
+
+## Features
+- Map with boundaries
+- Camera that follows the player
+- Player movement
+- Working collision system (not yet used)
+- Classes structured to be easily extended
+
+## Run it
+pip install pygame
+python main_POO.py
